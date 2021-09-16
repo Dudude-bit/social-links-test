@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    ports:
+      - "5000:5000"
+    networks:
+      - main
+    environment:
+      - DEBUG=true
+      - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB
+    restart: on-failure
+
+  postgres:
+    image: postgres
+    networks:
+      - main
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_DB=$POSTGRES_DB
+    restart: on-failure
+
+networks:
+  main: {}
+
+volumes:
+  postgres_volume: {}
